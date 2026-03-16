@@ -3,7 +3,7 @@ name: Build, Scan and Deploy train-ticket-reservation
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 env:
@@ -77,24 +77,3 @@ jobs:
       - name: Push to ECR
         run: |
           docker push $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
-
-      # ---------------------------
-      # Configure kubectl for EKS
-      # ---------------------------
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig \
-          --region $AWS_REGION \
-          --name ${{ secrets.EKS_CLUSTER }}
-
-      # ---------------------------
-      # Deploy to EKS
-      # ---------------------------
-      - name: Deploy to Kubernetes
-        run: |
-          IMAGE=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
-
-          sed -i "s|<IMAGE>|$IMAGE|g" k8s/deployment.yaml
-
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
