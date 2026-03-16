@@ -1,7 +1,7 @@
 selector:
   matchLabels:
-    app: train-ticket
+    app:Hack
 template:
   metadata:
     labels:
-      app: train-ticket
+      app: Hack
